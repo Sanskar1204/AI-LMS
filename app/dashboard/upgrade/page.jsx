@@ -3,7 +3,7 @@ import React from "react";
 const plans = [
   {
     name: "Free",
-    price: "0$",
+    price: "Rs.0",
     period: "/month",
     features: [
       "5 Course Generate",
