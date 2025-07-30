@@ -12,7 +12,7 @@ Learnify is an AI-driven learning platform designed to enhance the educational e
 
 ## 🎬 Demo
 
-🔗 **Live Demo**: [AI LMS - SalamHack](https://ai-lms-salamhack.vercel.app/)
+🔗 **Live Demo**: [AI LMS ](https://ai-lms-salamhack.vercel.app/)
 
 ## 🛠️ Getting Started
 

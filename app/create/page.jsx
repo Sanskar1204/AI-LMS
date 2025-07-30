@@ -15,7 +15,7 @@ const Create = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
-  const router = useRouter()
+  const router = useRouter();
 
   // Log formData changes (for debugging)
   useEffect(() => {
@@ -31,19 +31,42 @@ const Create = () => {
 
   const GenerateCourseOutline = async () => {
     try {
+      // Basic validation before sending to API
+      if (!formData.courseDescription) {
+        // Check for the correct field name
+        console.error(
+          "Error: Course description is required before generating."
+        );
+        // You might want to display a user-friendly message here
+        return;
+      }
+
       const courseId = uuidv4();
-      setLoading(true)
-      const result = await axios.post("/api/generate-course-outline", {
+      setLoading(true);
+
+      // Ensure the payload matches what the backend expects
+      const payload = {
         courseId,
-        ...formData,
+        courseDescription: formData.courseDescription, // Use 'courseDescription'
+        difficultyLevel: formData.difficultyLevel, // Include difficulty if needed by backend
+        studyType: formData.studyType, // Include studyType if needed by backend
         createdBy: user?.primaryEmailAddress?.emailAddress,
-      });
+      };
+
+      const result = await axios.post("/api/generate-course-outline", payload);
+
       console.log("API Response:", result.data);
-      setLoading(false)
-      router.replace("/dashboard")
+      setLoading(false);
+      router.replace("/dashboard");
     } catch (error) {
       console.error("Error generating course outline:", error);
-      setLoading(false)
+      setLoading(false);
+      // Display a more user-friendly error message if possible
+      // Assuming your backend sends 'error' field for user-facing messages
+      alert(
+        error.response?.data?.error ||
+          "Failed to generate course outline. Please try again."
+      );
     }
   };
 
@@ -58,11 +81,16 @@ const Create = () => {
 
       <div className="mt-10 w-full">
         {step === 0 ? (
-          <SelectOptions selectedStudyType={(value) => handleUserInput("studyType", value)} />
+          <SelectOptions
+            selectedStudyType={(value) => handleUserInput("studyType", value)}
+          />
         ) : (
           <TopicInputs
-            setTopic={(value) => handleUserInput("topic", value)}
-            setDifficultyLevel={(value) => handleUserInput("difficultyLevel", value)}
+            // CHANGE THIS LINE: Set the topic value to 'courseDescription'
+            setTopic={(value) => handleUserInput("courseDescription", value)}
+            setDifficultyLevel={(value) =>
+              handleUserInput("difficultyLevel", value)
+            }
           />
         )}
       </div>
@@ -73,13 +101,18 @@ const Create = () => {
           <Button onClick={() => setStep(step - 1)} variant="outline">
             Previous
           </Button>
-        ) : "_"}
+        ) : (
+          // Using a placeholder div for consistent layout when "Previous" is not shown
+          <div className="w-[80px]"></div>
+        )}
 
         {step === 0 ? (
           <Button onClick={() => setStep(1)}>Next</Button>
         ) : (
-          <Button onClick={GenerateCourseOutline}>
-            {loading ? <Loader  className="animate-spin"/> : "Generate"} </Button>
+          <Button onClick={GenerateCourseOutline} disabled={loading}>
+            {loading ? <Loader className="animate-spin mr-2" /> : "Generate"}{" "}
+            {loading ? "Generating..." : ""}
+          </Button>
         )}
       </div>
     </div>

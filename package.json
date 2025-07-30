@@ -28,6 +28,7 @@
     "next": "15.0.3",
     "react": "^18",
     "react-dom": "^18",
+    "stripe": "^18.3.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
