@@ -1,66 +1,24 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import MatrailCardItem from "./MatrailCardItem";
-import axios from "axios";
-import Link from "next/link";
+// // app/course/[courseId]/_components/StudyMaterialSection.jsx
+// "use client";
 
-const StudyMatrailSection = ({ courseId, course }) => {
-    const materialList = [
-        {
-            name: "notes",
-            desc: "Read notes to prepare it make easy",
-            icon: "/notes.png",
-            path: "/notes",
-            types: "notes",
-        },
-        {
-            name: "Flashcard",
-            desc: "Flashcard remember the concepts",
-            icon: "/flashcard.png",
-            path: "/flashcards",
-            types: "flashcard",
-        },
-        {
-            name: "Quiz",
-            desc: "Great way to test your knowledge",
-            icon: "/quiz.png",
-            path: "/quiz",
-            types: "quiz",
-        },
-      
-    ];
+// import React from "react";
 
-    const [studyTypeContent, setStudyTypeContent] = useState(null);
+// // Import the ChapterList component to display the modules and lessons
+// import ChapterList from "./ChapterList";
 
-    useEffect(() => {
-        getStudyMatrail();
-    }, [courseId]);
+// /**
+//  * Renders the study material section, which contains the chapter list.
+//  * @param {object} props The component props.
+//  * @param {Array} props.modules An array of module objects for the course.
+//  */
+// const StudyMaterialSection = ({ modules }) => {
+//   return (
+//     <div>
+//       <h2 className="text-2xl font-bold text-gray-900 mb-4">Study Material</h2>
+//       {/* ChapterList is responsible for mapping through the modules and rendering the list */}
+//       <ChapterList modules={modules} />
+//     </div>
+//   );
+// };
 
-    const getStudyMatrail = async () => {
-        try {
-            const result = await axios.post("/api/study-type/", {
-                courseId: courseId,
-                studyType: "ALL",
-            });
-            setStudyTypeContent(result.data);
-        } catch (error) {
-            console.error("Error fetching study material:", error);
-        }
-    };
-
-    return (
-        <div className="mt-5">
-            <h2 className="font-medium text-xl">Study Material</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-5 my-3">
-                {materialList.map((item, index) => (
-                    <Link href={`/course/${courseId}/${item.path}`} key={index}>                    
-                        <MatrailCardItem item={item} studyTypeContent={studyTypeContent} course={course} refrashData={getStudyMatrail} />
-                    </Link>
-                ))}
-            </div>
-       
-        </div>
-    );
-};
-
-export default StudyMatrailSection;
+// export default StudyMaterialSection;

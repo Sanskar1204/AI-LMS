@@ -33,39 +33,78 @@ const Create = () => {
     try {
       // Basic validation before sending to API
       if (!formData.courseDescription) {
-        // Check for the correct field name
         console.error(
           "Error: Course description is required before generating."
         );
-        // You might want to display a user-friendly message here
+        alert("Please provide a course description before generating."); // User-friendly alert
         return;
       }
 
-      const courseId = uuidv4();
+      const courseId = uuidv4(); // Generate UUID for the course
       setLoading(true);
 
-      // Ensure the payload matches what the backend expects
-      const payload = {
-        courseId,
-        courseDescription: formData.courseDescription, // Use 'courseDescription'
-        difficultyLevel: formData.difficultyLevel, // Include difficulty if needed by backend
-        studyType: formData.studyType, // Include studyType if needed by backend
+      // Payload for AI course outline generation
+      const generatePayload = {
+        courseId, // Pass courseId to AI generation if needed for internal tracking
+        courseDescription: formData.courseDescription,
+        difficultyLevel: formData.difficultyLevel,
+        studyType: formData.studyType,
         createdBy: user?.primaryEmailAddress?.emailAddress,
       };
 
-      const result = await axios.post("/api/generate-course-outline", payload);
+      console.log("Payload being sent to AI generation API:", generatePayload);
 
-      console.log("API Response:", result.data);
+      // 1. Call the AI generation API
+      const generateResult = await axios.post(
+        "/api/generate-course-outline",
+        generatePayload
+      );
+
+      console.log("AI Generation API Response:", generateResult.data);
+
+      if (!generateResult.data.success || !generateResult.data.result) {
+        throw new Error(
+          generateResult.data.error ||
+            "AI generation failed with no specific error."
+        );
+      }
+
+      const aiGeneratedContent = generateResult.data.result; // The full JSON outline from AI
+
+      // 2. Prepare payload for saving the course to your database
+      const savePayload = {
+        courseId: generatePayload.courseId, // Use the same courseId
+        courseDescription: generatePayload.courseDescription,
+        difficultyLevel: generatePayload.difficultyLevel,
+        studyType: generatePayload.studyType,
+        createdBy: generatePayload.createdBy,
+        aiGeneratedContent: aiGeneratedContent, // Pass the entire AI-generated content
+      };
+
+      console.log("Payload being sent to save course API:", savePayload);
+
+      // 3. Call the API to save the course to the database
+      const saveResult = await axios.post("/api/save-course", savePayload);
+
+      console.log("Save Course API Response:", saveResult.data);
+
+      if (!saveResult.data.success) {
+        throw new Error(
+          saveResult.data.error || "Failed to save course to database."
+        );
+      }
+
       setLoading(false);
+      // Redirect to the dashboard after successful generation AND saving
       router.replace("/dashboard");
     } catch (error) {
-      console.error("Error generating course outline:", error);
+      console.error("Error in course generation or saving process:", error);
       setLoading(false);
-      // Display a more user-friendly error message if possible
-      // Assuming your backend sends 'error' field for user-facing messages
+      // Display a more user-friendly error message
       alert(
         error.response?.data?.error ||
-          "Failed to generate course outline. Please try again."
+          error.message ||
+          "An unexpected error occurred. Please try again."
       );
     }
   };
@@ -86,7 +125,6 @@ const Create = () => {
           />
         ) : (
           <TopicInputs
-            // CHANGE THIS LINE: Set the topic value to 'courseDescription'
             setTopic={(value) => handleUserInput("courseDescription", value)}
             setDifficultyLevel={(value) =>
               handleUserInput("difficultyLevel", value)
@@ -102,7 +140,6 @@ const Create = () => {
             Previous
           </Button>
         ) : (
-          // Using a placeholder div for consistent layout when "Previous" is not shown
           <div className="w-[80px]"></div>
         )}
 

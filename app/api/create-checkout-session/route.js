@@ -5,7 +5,7 @@ import Razorpay from "razorpay";
 // Initialize Razorpay with your Key ID and Key Secret
 // Ensure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are set in your .env.local file
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
+  key_id: process.env.RAZORPAY_KEY_ID_PRIVATE, // Changed from RAZORPAY_KEY_ID_PRIVATE to RAZORPAY_KEY_ID
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 

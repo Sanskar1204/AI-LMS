@@ -1,4 +1,8 @@
+"use client"; // This page needs to be a Client Component
+
 import React from "react";
+// Import the UpgradeButton component
+import UpgradeButton from "./UpgradeButton"; // Adjust path if needed
 
 const plans = [
   {
@@ -14,6 +18,8 @@ const plans = [
     buttonText: "Current Plan",
     buttonColor: "white",
     current: true,
+    // Add a planId for clarity, though not strictly used in this example
+    planId: "free",
   },
   {
     name: "Monthly",
@@ -28,6 +34,13 @@ const plans = [
     buttonText: "Get Started",
     buttonColor: "blue",
     current: false,
+    // Add a planId for clarity
+    planId: "monthly_premium",
+    // You might also pass the actual amount and currency if the UpgradeButton
+    // needs to dynamically adjust based on the plan.
+    // For now, UpgradeButton hardcodes 100 USD, so ensure your backend matches.
+    amount: 100, // Example amount in base unit (e.g., USD)
+    currency: "USD", // Example currency
   },
 ];
 
@@ -79,15 +92,27 @@ const Upgrade = () => {
             </div>
 
             <div className="mt-6">
-              <button
-                className={` cursor-pointer w-full py-3 px-4 rounded text-center font-medium ${
-                  plan.buttonColor === "blue"
-                    ? "bg-[#3700ce] text-white hover:bg-blue-800"
-                    : "bg-white text-[#3700ce] border border-[#3700ce] hover:bg-blue-50"
-                }`}
-              >
-                {plan.buttonText}
-              </button>
+              {/* Conditionally render the UpgradeButton for the "Monthly" plan */}
+              {plan.planId === "monthly_premium" ? (
+                // Pass plan details to UpgradeButton if it needs them (optional)
+                // The UpgradeButton currently hardcodes the amount, so this is for future flexibility.
+                <UpgradeButton
+                  planAmount={plan.amount}
+                  planCurrency={plan.currency}
+                  planName={plan.name}
+                />
+              ) : (
+                <button
+                  className={`cursor-not-allowed w-full py-3 px-4 rounded text-center font-medium ${
+                    plan.buttonColor === "blue"
+                      ? "bg-[#3700ce] text-white opacity-50" // Dim for non-clickable
+                      : "bg-white text-[#3700ce] border border-[#3700ce] opacity-50"
+                  }`}
+                  disabled={true} // Disable the button for non-upgradeable plans
+                >
+                  {plan.buttonText}
+                </button>
+              )}
             </div>
           </div>
         ))}

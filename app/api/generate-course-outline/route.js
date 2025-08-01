@@ -9,8 +9,7 @@ const INITIAL_DELAY_MS = 1000;
 // 'gemini-1.5-flash' is a faster, more cost-effective alternative.
 // 'gemini-pro' was causing a 404 and has been replaced/updated.
 // Ensure this array is updated in your backend file!
-// app/api/generate-course-outline/route.js
-const FALLBACK_MODELS = ["gemini-1.5-flash"];
+const FALLBACK_MODELS = ["gemini-1.5-flash", "gemini-1.5-pro"]; // Re-added gemini-1.5-pro as a fallback
 
 /**
  * Attempts to generate content with a given model and prompt,
